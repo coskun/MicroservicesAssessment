@@ -7,6 +7,8 @@ using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Serialization;
 
+using RabbitMqConnectionFactory;
+
 namespace Monitor.API
 {
     public class Startup
@@ -28,6 +30,7 @@ namespace Monitor.API
                 });
 
             services.AddRazorPages();
+            services.AddSingleton<IRabbitMqConnectionFactory, RabbitMqConnectionFactory.RabbitMqConnectionFactory>();
 
             #region API Documentation
 

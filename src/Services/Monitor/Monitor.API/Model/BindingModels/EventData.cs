@@ -16,7 +16,7 @@ namespace Monitor.API.Model.BindingModels
         /// <summary>
         /// Category of event
         /// </summary>
-        [JsonProperty("type"), Required]
+        [JsonProperty("type"), Required(AllowEmptyStrings = false)]
         public string Type { get; set; }
 
         /// <summary>

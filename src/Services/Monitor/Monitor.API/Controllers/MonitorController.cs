@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using Monitor.API.Model.BindingModels;
@@ -7,6 +6,8 @@ using Monitor.API.Model.BindingModels;
 using Newtonsoft.Json;
 
 using RabbitMQ.Client;
+
+using RabbitMqConnectionFactory;
 
 using System;
 using System.Net;
@@ -19,12 +20,12 @@ namespace Monitor.API.Controllers
     public class MonitorController : ControllerBase
     {
         private readonly ILogger<MonitorController> _logger;
-        private readonly IConfiguration _configuration;
+        private readonly IRabbitMqConnectionFactory _connectionFactory;
 
-        public MonitorController(ILogger<MonitorController> logger, IConfiguration configuration)
+        public MonitorController(ILogger<MonitorController> logger, IRabbitMqConnectionFactory connectionFactory)
         {
             _logger = logger;
-            _configuration = configuration;
+            _connectionFactory = connectionFactory;
         }
 
         [Route("Event")]
@@ -39,23 +40,11 @@ namespace Monitor.API.Controllers
 
             try
             {
-                // TODO : Move connection logic for persistent and shared connection
+                // TODO : Use EventBus with Integration events
+                var channel = _connectionFactory.GetModel();
 
-                var connFactory = new ConnectionFactory()
-                {
-                    HostName = !string.IsNullOrEmpty(_configuration["RABBITMQ-HOST"]) ? _configuration["RABBITMQ-HOST"] : "docker.for.win.localhost",
-                    UserName = !string.IsNullOrEmpty(_configuration["RABBITMQ-USER"]) ? _configuration["RABBITMQ-USER"] : "guest",
-                    Password = !string.IsNullOrEmpty(_configuration["RABBITMQ-PASS"]) ? _configuration["RABBITMQ-PASS"] : "guest",
-                };
-
-                using (var conn = connFactory.CreateConnection())
-                using (var channel = conn.CreateModel())
-                {
-                    // TODO : Use EventBus with Integration events
-
-                    channel.QueueDeclare("EventDataQueue", false, false, false, null);
-                    channel.BasicPublish(string.Empty, routingKey: "EventDataQueue", basicProperties: null, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(eventDataBindingModel)));
-                }
+                channel.QueueDeclare("EventDataQueue", false, false, false, null);
+                channel.BasicPublish(string.Empty, routingKey: "EventDataQueue", basicProperties: null, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(eventDataBindingModel)));
 
                 Console.WriteLine($"Event consumed. EventData : {JsonConvert.SerializeObject(eventDataBindingModel)}");
             }

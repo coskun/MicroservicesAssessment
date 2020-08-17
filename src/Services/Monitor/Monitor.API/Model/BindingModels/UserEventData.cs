@@ -15,7 +15,7 @@ namespace Monitor.API.Model.BindingModels
         /// <summary>
         /// User's provider information
         /// </summary>
-        [JsonProperty("provider"), Required]
+        [JsonProperty("provider"), Required(AllowEmptyStrings = false)]
         public string Provider { get; set; }
 
         /// <summary>

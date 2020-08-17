@@ -22,6 +22,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.env = .env
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{1B52666E-4798-4EAE-9264-5FEA294FEBE6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMqConnectionFactory", "src\Shared\RabbitMqConnectionFactory\RabbitMqConnectionFactory.csproj", "{A4B5DC72-9D3E-4524-8CEE-48399DB51570}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +44,10 @@ Global
 		{6FE24B15-EFA4-4C5F-88C1-0EE8B1F04D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FE24B15-EFA4-4C5F-88C1-0EE8B1F04D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FE24B15-EFA4-4C5F-88C1-0EE8B1F04D41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4B5DC72-9D3E-4524-8CEE-48399DB51570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4B5DC72-9D3E-4524-8CEE-48399DB51570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4B5DC72-9D3E-4524-8CEE-48399DB51570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4B5DC72-9D3E-4524-8CEE-48399DB51570}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +58,8 @@ Global
 		{DA33E98D-8657-4786-945B-1DB2C8151DCC} = {8F962E6F-E989-4FD5-B08B-24F044046F53}
 		{F6570819-DFB3-4DB9-B78A-8AC5E2D71016} = {8F962E6F-E989-4FD5-B08B-24F044046F53}
 		{2620A2AB-0641-4617-9988-91937CAA7E18} = {DA33E98D-8657-4786-945B-1DB2C8151DCC}
+		{1B52666E-4798-4EAE-9264-5FEA294FEBE6} = {416D4C75-007A-4F05-BEE3-4CA739A970D4}
+		{A4B5DC72-9D3E-4524-8CEE-48399DB51570} = {1B52666E-4798-4EAE-9264-5FEA294FEBE6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C91FB91-BC11-4FB3-9714-388D387742E9}
