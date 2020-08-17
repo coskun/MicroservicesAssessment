@@ -7,9 +7,9 @@ namespace Monitor.API.Controllers
     public class HomeController : Controller
     {
         [HttpGet, Route("")]
-        public ActionResult Index()
+        public IActionResult Index()
         {
-            return View();
+            return new RedirectResult("~/swagger");
         }
     }
 }

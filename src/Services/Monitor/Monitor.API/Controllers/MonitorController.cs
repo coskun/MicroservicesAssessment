@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-using Monitor.API.Model;
+using Monitor.API.Model.BindingModels;
 
 using Newtonsoft.Json;
 
@@ -39,6 +39,8 @@ namespace Monitor.API.Controllers
 
             try
             {
+                // TODO : Move connection logic for persistent and shared connection
+
                 var connFactory = new ConnectionFactory()
                 {
                     HostName = !string.IsNullOrEmpty(_configuration["RABBITMQ-HOST"]) ? _configuration["RABBITMQ-HOST"] : "docker.for.win.localhost",
@@ -49,6 +51,8 @@ namespace Monitor.API.Controllers
                 using (var conn = connFactory.CreateConnection())
                 using (var channel = conn.CreateModel())
                 {
+                    // TODO : Use EventBus with Integration events
+
                     channel.QueueDeclare("EventDataQueue", false, false, false, null);
                     channel.BasicPublish(string.Empty, routingKey: "EventDataQueue", basicProperties: null, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(eventDataBindingModel)));
                 }

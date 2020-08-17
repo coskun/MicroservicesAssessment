@@ -38,7 +38,7 @@ namespace Monitor.API
                     {
                         Title = "Microservice Assessment - Monitor HTTP API",
                         Version = "v1",
-                        Description = "Montior Service HTTP API"
+                        Description = "Microservice Assessment - Monitor HTTP API"
                     });
                 })
                 .AddSwaggerGenNewtonsoftSupport();

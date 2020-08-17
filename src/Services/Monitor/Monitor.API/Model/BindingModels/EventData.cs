@@ -3,7 +3,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Monitor.API.Model
+namespace Monitor.API.Model.BindingModels
 {
     public class EventData
     {
