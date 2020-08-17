@@ -12,6 +12,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - APP_BASE_PATH=/monitor-api
+      - RABBITMQ_HOST=${EXTERNAL_DNS_NAME_OR_IP}
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
     ports:
       - "80"
       - "443"

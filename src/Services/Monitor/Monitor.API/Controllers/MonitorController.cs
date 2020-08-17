@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using Monitor.API.Model;
 
 using Newtonsoft.Json;
 
+using RabbitMQ.Client;
+
 using System;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Monitor.API.Controllers
@@ -15,10 +19,12 @@ namespace Monitor.API.Controllers
     public class MonitorController : ControllerBase
     {
         private readonly ILogger<MonitorController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public MonitorController(ILogger<MonitorController> logger)
+        public MonitorController(ILogger<MonitorController> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
         }
 
         [Route("Event")]
@@ -29,13 +35,25 @@ namespace Monitor.API.Controllers
         public async Task<ActionResult> PostEventAsync(EventData[] eventDataBindingModel)
         {
             if (!ModelState.IsValid)
-                return BadRequest(); // 400
+                return BadRequest();
 
             try
             {
-                // TODO : Publish
+                var connFactory = new ConnectionFactory()
+                {
+                    HostName = !string.IsNullOrEmpty(_configuration["RABBITMQ-HOST"]) ? _configuration["RABBITMQ-HOST"] : "docker.for.win.localhost",
+                    UserName = !string.IsNullOrEmpty(_configuration["RABBITMQ-USER"]) ? _configuration["RABBITMQ-USER"] : "guest",
+                    Password = !string.IsNullOrEmpty(_configuration["RABBITMQ-PASS"]) ? _configuration["RABBITMQ-PASS"] : "guest",
+                };
 
-                _logger.LogTrace("Event consumed. EventData : {eventData}", JsonConvert.SerializeObject(eventDataBindingModel));
+                using (var conn = connFactory.CreateConnection())
+                using (var channel = conn.CreateModel())
+                {
+                    channel.QueueDeclare("EventDataQueue", false, false, false, null);
+                    channel.BasicPublish(string.Empty, routingKey: "EventDataQueue", basicProperties: null, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(eventDataBindingModel)));
+                }
+
+                Console.WriteLine($"Event consumed. EventData : {JsonConvert.SerializeObject(eventDataBindingModel)}");
             }
             catch (Exception ex)
             {
@@ -43,7 +61,7 @@ namespace Monitor.API.Controllers
                 return StatusCode(500); // Internal Server Error
             }
 
-            return Ok(); // 200 OK
+            return Ok();
         }
     }
 }
