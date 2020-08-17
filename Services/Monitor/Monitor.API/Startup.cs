@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+
+using Newtonsoft.Json.Serialization;
 
 namespace Monitor.API
 {
@@ -22,13 +18,34 @@ namespace Monitor.API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services
+                .AddControllersWithViews()
+                .AddNewtonsoftJson(o =>
+                {
+                    o.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                });
+
+            services.AddRazorPages();
+
+            #region API Documentation
+
+            services
+                .AddSwaggerGen(options =>
+                {
+                    options.SwaggerDoc("v1", new OpenApiInfo
+                    {
+                        Title = "Microservice Assessment - Monitor HTTP API",
+                        Version = "v1",
+                        Description = "Montior Service HTTP API"
+                    });
+                })
+                .AddSwaggerGenNewtonsoftSupport();
+
+            #endregion
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -36,15 +53,29 @@ namespace Monitor.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            var appBasePath = Configuration["APP_BASE_PATH"];
+            if (!string.IsNullOrEmpty(appBasePath))
+                app.UsePathBase(appBasePath);
 
+            #region API Documentation
+
+            app.UseSwagger()
+               .UseSwaggerUI(setup =>
+               {
+                   setup.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(appBasePath) ? appBasePath : string.Empty) }/swagger/v1/swagger.json", "Monitor.API V1");
+               });
+
+            #endregion
+
+            app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }

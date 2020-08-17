@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DA33E98D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monitor.API", "Services\Monitor\Monitor.API\Monitor.API.csproj", "{F6570819-DFB3-4DB9-B78A-8AC5E2D71016}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monitor.UnitTests", "Services\Monitor\Monitor.UnitTests\Monitor.UnitTests.csproj", "{2620A2AB-0641-4617-9988-91937CAA7E18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monitor.UnitTests", "Services\Monitor\Monitor.UnitTests\Monitor.UnitTests.csproj", "{2620A2AB-0641-4617-9988-91937CAA7E18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
