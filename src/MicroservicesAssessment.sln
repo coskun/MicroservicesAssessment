@@ -9,9 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Monitor", "Monitor", "{8F96
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DA33E98D-8657-4786-945B-1DB2C8151DCC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monitor.API", "src\Services\Monitor\Monitor.API\Monitor.API.csproj", "{F6570819-DFB3-4DB9-B78A-8AC5E2D71016}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monitor.API", "Services\Monitor\Monitor.API\Monitor.API.csproj", "{F6570819-DFB3-4DB9-B78A-8AC5E2D71016}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monitor.UnitTests", "src\Services\Monitor\Monitor.UnitTests\Monitor.UnitTests.csproj", "{2620A2AB-0641-4617-9988-91937CAA7E18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monitor.UnitTests", "Services\Monitor\Monitor.UnitTests\Monitor.UnitTests.csproj", "{2620A2AB-0641-4617-9988-91937CAA7E18}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{416D4C75-007A-4F05-BEE3-4CA739A970D4}"
 EndProject
@@ -20,11 +20,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5116F138-7943-4C39-A7F4-04D20A3FFB2D}"
 	ProjectSection(SolutionItems) = preProject
 		.env = .env
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{1B52666E-4798-4EAE-9264-5FEA294FEBE6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMqConnectionFactory", "src\Shared\RabbitMqConnectionFactory\RabbitMqConnectionFactory.csproj", "{A4B5DC72-9D3E-4524-8CEE-48399DB51570}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMqConnectionFactory", "Shared\RabbitMqConnectionFactory\RabbitMqConnectionFactory.csproj", "{A4B5DC72-9D3E-4524-8CEE-48399DB51570}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -9,6 +9,6 @@ services:
     image: ${DOCKER_REGISTRY-}monitorapi
     build:
       context: .
-      dockerfile: src/Services/Monitor/Monitor.API/Dockerfile
+      dockerfile: Services/Monitor/Monitor.API/Dockerfile
     depends_on:
       - rabbitmq
