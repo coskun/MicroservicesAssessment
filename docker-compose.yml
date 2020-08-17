@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+
+  monitor.api:
+    image: ${DOCKER_REGISTRY-}monitorapi
+    build:
+      context: .
+      dockerfile: src/Services/Monitor/Monitor.API/Dockerfile
+    depends_on:
+      - rabbitmq
