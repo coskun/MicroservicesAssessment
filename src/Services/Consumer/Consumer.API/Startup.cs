@@ -1,3 +1,6 @@
+using Consumer.API.Extensions;
+
+using EventBus.Base.Standard.Configuration;
 using EventBus.RabbitMQ.Standard.Configuration;
 using EventBus.RabbitMQ.Standard.Options;
 
@@ -6,11 +9,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Serialization;
 
-namespace Monitor.API
+namespace Consumer.API
 {
     public class Startup
     {
@@ -31,6 +33,7 @@ namespace Monitor.API
                 });
 
             services.AddRazorPages();
+            //services.AddSingleton<IRabbitMqConnectionFactory, RabbitMqConnectionFactory.RabbitMqConnectionFactory>();
 
             #region RabbitMq
 
@@ -48,22 +51,7 @@ namespace Monitor.API
 
             services.AddRabbitMqConnection(rabbitMqOptions);
             services.AddRabbitMqRegistration(rabbitMqOptions);
-
-            #endregion
-
-            #region API Documentation
-
-            services
-                .AddSwaggerGen(options =>
-                {
-                    options.SwaggerDoc("v1", new OpenApiInfo
-                    {
-                        Title = "Microservice Assessment - Monitor HTTP API",
-                        Version = "v1",
-                        Description = "Microservice Assessment - Monitor HTTP API"
-                    });
-                })
-                .AddSwaggerGenNewtonsoftSupport();
+            services.AddEventBusHandling(EventBusExtension.GetHandlers());
 
             #endregion
         }
@@ -75,24 +63,10 @@ namespace Monitor.API
                 app.UseDeveloperExceptionPage();
             }
 
-            var appBasePath = Configuration["APP_BASE_PATH"];
-            if (!string.IsNullOrEmpty(appBasePath))
-                app.UsePathBase(appBasePath);
-
-            #region API Documentation
-
-            app.UseSwagger()
-               .UseSwaggerUI(setup =>
-               {
-                   setup.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(appBasePath) ? appBasePath : string.Empty) }/swagger/v1/swagger.json", "Monitor.API V1");
-               });
-
-            #endregion
-
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.SubscribeToEvents();
 
             app.UseEndpoints(endpoints =>
             {

@@ -12,3 +12,11 @@ services:
       dockerfile: Services/Monitor/Monitor.API/Dockerfile
     depends_on:
       - rabbitmq
+
+  consumer.api:
+    image: ${DOCKER_REGISTRY-}consumerapi
+    build:
+      context: .
+      dockerfile: Services/Consumer/Consumer.API/Dockerfile
+    depends_on:
+      - rabbitmq

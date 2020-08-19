@@ -12,18 +12,14 @@ COPY "Services/Monitor/Monitor.UnitTests/Monitor.UnitTests.csproj" "Services/Mon
 COPY "Services/Monitor/Monitor.API/Monitor.API.csproj" "Services/Monitor/Monitor.API/"
 COPY "Services/Consumer/Consumer.API/Consumer.API.csproj" "Services/Consumer/Consumer.API/"
 
-RUN dotnet restore "Services/Monitor/Monitor.API/Monitor.API.csproj"
+RUN dotnet restore "Services/Consumer/Consumer.API/Consumer.API.csproj"
 COPY . .
 
 FROM build as publish
-WORKDIR "Services/Monitor/Monitor.API"
-RUN dotnet publish "Monitor.API.csproj" -c Release -o /app/publish
-
-FROM build AS unittest
-WORKDIR "Services/Monitor/Monitor.UnitTests"
-RUN dotnet test "Monitor.UnitTests.csproj"
+WORKDIR "Services/Consumer/Consumer.API"
+RUN dotnet publish "Consumer.API.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Monitor.API.dll"]
+ENTRYPOINT ["dotnet", "Consumer.API.dll"]

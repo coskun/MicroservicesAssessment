@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using EventBus.Base.Standard;
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using Monitor.API.Controllers;
+using Monitor.API.IntegrationEvents.Events;
 
 using Moq;
-
-using RabbitMQ.Client;
-
-using RabbitMqConnectionFactory;
 
 using System;
 using System.Collections.Generic;
@@ -21,16 +20,14 @@ namespace Monitor.UnitTests
     public class MonitorWebApiTest
     {
         private readonly Mock<ILogger<MonitorController>> _loggerMock;
-        private readonly Mock<IRabbitMqConnectionFactory> _mockConnectionFactory;
-        private readonly Mock<IModel> _mockRabbitMqModel;
+        private readonly Mock<IEventBus> _eventBusMock;
 
         private MonitorController _mockMonitorController;
 
         public MonitorWebApiTest()
         {
             _loggerMock = new Mock<ILogger<MonitorController>>();
-            _mockConnectionFactory = new Mock<IRabbitMqConnectionFactory>();
-            _mockRabbitMqModel = new Mock<IModel>();
+            _eventBusMock = new Mock<IEventBus>();
         }
 
         [Fact]
@@ -60,10 +57,11 @@ namespace Monitor.UnitTests
                 }
             };
 
-            _mockConnectionFactory.Setup(x => x.GetModel()).Returns(_mockRabbitMqModel.Object);
-            _mockMonitorController = new MonitorController(_loggerMock.Object, _mockConnectionFactory.Object);
-
+            _mockMonitorController = new MonitorController(_loggerMock.Object, _eventBusMock.Object);
             var result = await _mockMonitorController.PostEventAsync(postData);
+
+            _eventBusMock.Verify(mock => mock.Publish(It.IsAny<HttpEventDataIntegrationEvent>()), Times.Once);
+
             Assert.Equal((result as OkResult).StatusCode, (int)HttpStatusCode.OK);
         }
 
@@ -82,34 +80,12 @@ namespace Monitor.UnitTests
                 }
             };
 
-            _mockConnectionFactory.Setup(x => x.GetModel()).Returns(_mockRabbitMqModel.Object);
-            _mockMonitorController = new MonitorController(_loggerMock.Object, _mockConnectionFactory.Object);
+            _mockMonitorController = new MonitorController(_loggerMock.Object, _eventBusMock.Object);
 
             _mockMonitorController.ModelState.AddModelError("Type", "Type property is required");
             var result = await _mockMonitorController.PostEventAsync(postData);
 
             Assert.Equal((result as BadRequestResult).StatusCode, (int)HttpStatusCode.BadRequest);
-        }
-
-        [Fact]
-        public async Task Null_RabbitMq_Connection_Should_Return_InternalServerError_Status_Code()
-        {
-            var postData = new API.Model.BindingModels.EventData[]
-            {
-                new API.Model.BindingModels.EventData
-                {
-                    App = Guid.NewGuid(),
-                    ActionDate = DateTime.MinValue,
-                    IsSucceeded = true,
-                    UserData = null,
-                    Attributes = null
-                }
-            };
-
-            _mockMonitorController = new MonitorController(_loggerMock.Object, _mockConnectionFactory.Object);
-            var result = await _mockMonitorController.PostEventAsync(postData);
-
-            Assert.Equal((result as StatusCodeResult).StatusCode, (int)HttpStatusCode.InternalServerError);
         }
     }
 }

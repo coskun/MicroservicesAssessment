@@ -1,17 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using EventBus.Base.Standard;
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+using Monitor.API.IntegrationEvents.Events;
+using Monitor.API.Model;
 using Monitor.API.Model.BindingModels;
 
-using Newtonsoft.Json;
-
-using RabbitMQ.Client;
-
-using RabbitMqConnectionFactory;
-
 using System;
+using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Monitor.API.Controllers
@@ -20,12 +18,12 @@ namespace Monitor.API.Controllers
     public class MonitorController : ControllerBase
     {
         private readonly ILogger<MonitorController> _logger;
-        private readonly IRabbitMqConnectionFactory _connectionFactory;
+        private readonly IEventBus _eventBus;
 
-        public MonitorController(ILogger<MonitorController> logger, IRabbitMqConnectionFactory connectionFactory)
+        public MonitorController(ILogger<MonitorController> logger, IEventBus eventBus)
         {
             _logger = logger;
-            _connectionFactory = connectionFactory;
+            _eventBus = eventBus;
         }
 
         [Route("Event")]
@@ -40,13 +38,25 @@ namespace Monitor.API.Controllers
 
             try
             {
-                // TODO : Use EventBus with Integration events
-                var channel = _connectionFactory.GetModel();
+                HttpEventDataIntegrationEvent @event = new HttpEventDataIntegrationEvent(eventDataBindingModel.Select(x => new EventDataDTO
+                {
+                    App = x.App,
+                    Type = x.Type,
+                    ActionDate = x.ActionDate,
+                    IsSucceeded = x.IsSucceeded,
+                    Metadata = x.Metadata,
+                    Attributes = x.Attributes,
+                    UserData = new UserEventDataDTO
+                    {
+                        IsAuthenticated = x.UserData.IsAuthenticated,
+                        Provider = x.UserData.Provider,
+                        Id = x.UserData.Id,
+                        EmailAddress = x.UserData.EmailAddress
+                    }
+                }).ToArray());
 
-                channel.QueueDeclare("EventDataQueue", false, false, false, null);
-                channel.BasicPublish(string.Empty, routingKey: "EventDataQueue", basicProperties: null, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(eventDataBindingModel)));
-
-                Console.WriteLine($"Event consumed. EventData : {JsonConvert.SerializeObject(eventDataBindingModel)}");
+                _logger.LogInformation("----- Publishing integration event: {IntegrationEventId} from {AppName} - ({@IntegrationEvent})", @event.Id, Program.AppName, @event);
+                _eventBus.Publish(@event);
             }
             catch (Exception ex)
             {

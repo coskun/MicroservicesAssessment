@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 using System.Threading.Tasks;
 
-namespace Monitor.API
+namespace Consumer.API
 {
     public class Program
     {
